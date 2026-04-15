@@ -4,11 +4,21 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-app.use(express.json());
-app.use(cors());
+
+
 app.use(cors({
-  origin: "*"
+  origin: [
+    "https://personal-expense-tracker-3-06hz.onrender.com"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
 }));
+
+
+app.options("*", cors());
+
+app.use(express.json());
+
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log(err));
