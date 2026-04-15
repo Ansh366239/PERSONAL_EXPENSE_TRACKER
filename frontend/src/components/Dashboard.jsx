@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const API = import.meta.env.VITE_API_URL;
+
 export default function Dashboard() {
   const [expenses, setExpenses] = useState([]);
   const [form, setForm] = useState({ title: "", amount: "", category: "" });
@@ -8,38 +10,50 @@ export default function Dashboard() {
   const token = localStorage.getItem("token");
 
   const fetchExpenses = async () => {
-    const res = await axios.get("http://localhost:5000/api/expense", {
-      headers: { Authorization: token }
-    });
-    setExpenses(res.data);
+    try {
+      const res = await axios.get(`${API}/api/expense`, {
+        headers: { Authorization: token }
+      });
+      setExpenses(res.data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const addExpense = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:5000/api/expense", form, {
-      headers: { Authorization: token }
-    });
-    fetchExpenses();
+    try {
+      await axios.post(`${API}/api/expense`, form, {
+        headers: { Authorization: token }
+      });
+      fetchExpenses();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
     fetchExpenses();
   }, []);
 
+  const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+
   return (
-    <div>
-      <h2>Dashboard</h2>
+    <div className="dashboard">
+      <h2>Expense Dashboard</h2>
+      <h3>Total: ₹{total}</h3>
 
       <form onSubmit={addExpense}>
         <input placeholder="Title" onChange={e => setForm({...form, title:e.target.value})}/>
         <input placeholder="Amount" onChange={e => setForm({...form, amount:e.target.value})}/>
         <input placeholder="Category" onChange={e => setForm({...form, category:e.target.value})}/>
-        <button>Add</button>
+        <button type="submit">Add Expense</button>
       </form>
 
       {expenses.map((exp, i) => (
-        <div key={i}>
-          {exp.title} - ₹{exp.amount} - {exp.category}
+        <div className="expense-card" key={i}>
+          <strong>{exp.title}</strong>
+          <p>₹{exp.amount} | {exp.category}</p>
         </div>
       ))}
     </div>
