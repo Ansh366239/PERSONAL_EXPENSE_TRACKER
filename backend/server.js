@@ -5,17 +5,11 @@ require("dotenv").config();
 
 const app = express();
 
-
+// ✅ Correct CORS setup
 app.use(cors({
-  origin: [
-    "https://personal-expense-tracker-3-06hz.onrender.com"
-  ],
+  origin: "https://personal-expense-tracker-3-06hz.onrender.com",
   methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
 }));
-
-
-app.options("*", cors());
 
 app.use(express.json());
 
